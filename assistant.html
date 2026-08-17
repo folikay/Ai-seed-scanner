@@ -1,0 +1,1164 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>AI Assistant • Seed Care</title>
+    <style>
+         :root {
+            --green: #1FA45C;
+            --green-dark: #158049;
+            --green-tint: #E6F6EC;
+            --bg: #F4F6F5;
+            --card: #ffffff;
+            --text: #1B2420;
+            --text-soft: #6B776F;
+            --border: #EAEFEC;
+            --shadow: 0 2px 10px rgba(20, 40, 30, 0.06);
+            --radius-lg: 20px;
+            --radius-md: 16px;
+        }
+        
+        * {
+            box-sizing: border-box;
+        }
+        
+        html,
+        body {
+            height: 100%;
+        }
+        
+        body {
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            -webkit-font-smoothing: antialiased;
+        }
+        
+        .app {
+            width: 100%;
+            max-width: 460px;
+            min-height: 100vh;
+            background: var(--bg);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+        
+        xam
+        /* HEADER */
+        
+        header {
+            background: var(--card);
+            padding: 14px 14px 12px;
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 20;
+        }
+        
+        .header-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .icon-btn {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            border: none;
+            background: #F1F3F2;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text);
+            font-size: 18px;
+            flex-shrink: 0;
+            cursor: pointer;
+        }
+        
+        .icon-btn:active {
+            background: #E4E8E6;
+        }
+        
+        .header-title {
+            flex: 1;
+            text-align: center;
+        }
+        
+        .history-dropdown {
+            position: absolute;
+            top: 72px;
+            right: 14px;
+            width: min(340px, calc(100% - 28px));
+            background: #fff;
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            box-shadow: var(--shadow);
+            z-index: 50;
+            display: none;
+            flex-direction: column;
+            max-height: 400px;
+            overflow: hidden;
+        }
+        
+        .history-dropdown.open {
+            display: flex;
+        }
+        
+        .history-dropdown .history-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 14px 16px 10px;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .history-dropdown .history-title {
+            font-weight: 700;
+            font-size: 15px;
+        }
+        
+        .history-dropdown .history-actions button {
+            background: transparent;
+            border: none;
+            color: var(--green-dark);
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 13px;
+        }
+        
+        .history-dropdown .history-list {
+            padding: 10px 0 10px 0;
+            max-height: 320px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .history-dropdown .history-item {
+            padding: 10px 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            font-size: 13px;
+            border-bottom: 1px solid #F1F3F2;
+        }
+        
+        .history-dropdown .history-item:last-child {
+            border-bottom: none;
+        }
+        
+        .history-dropdown .history-item .history-role {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text-soft);
+        }
+        
+        .history-dropdown .history-item .history-text {
+            color: var(--text);
+            line-height: 1.4;
+            white-space: pre-wrap;
+        }
+        
+        .history-dropdown .history-empty {
+            padding: 18px 16px;
+            color: var(--text-soft);
+            font-size: 13px;
+        }
+        
+        .header-title h1 {
+            margin: 0;
+            font-size: 17px;
+            font-weight: 700;
+            letter-spacing: -0.2px;
+        }
+        
+        .header-title .sub {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            font-size: 13px;
+            color: var(--green-dark);
+            font-weight: 600;
+            margin-top: 1px;
+        }
+        
+        .header-spacer {
+            width: 38px;
+            flex-shrink: 0;
+        }
+        /* WEATHER STRIP */
+        
+        .weather-strip {
+            margin: 12px 14px 0;
+            background: linear-gradient(135deg, #12864C, #1FA45C 60%, #3DBE73);
+            color: #fff;
+            border-radius: var(--radius-md);
+            padding: 12px 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 13px;
+            box-shadow: var(--shadow);
+        }
+        
+        .weather-strip .wloc {
+            font-weight: 700;
+            font-size: 13.5px;
+        }
+        
+        .weather-strip .wsub {
+            opacity: .9;
+            font-size: 11.5px;
+            margin-top: 2px;
+        }
+        
+        .weather-strip .wtemp {
+            font-size: 22px;
+            font-weight: 800;
+        }
+        
+        .weather-strip button {
+            background: rgba(255, 255, 255, 0.18);
+            border: none;
+            color: #fff;
+            padding: 6px 10px;
+            border-radius: 10px;
+            font-size: 11.5px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        /* CHAT */
+        
+        .chat {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px 14px 6px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+        
+        .msg-row {
+            display: flex;
+            gap: 8px;
+            align-items: flex-start;
+        }
+        
+        .msg-row.user {
+            flex-direction: row-reverse;
+        }
+        
+        .avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--green);
+            color: #fff;
+            font-size: 12px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        
+        .avatar.user {
+            background: #37424B;
+        }
+        
+        .bubble {
+            background: var(--card);
+            padding: 12px 14px;
+            border-radius: 18px;
+            border-top-left-radius: 6px;
+            font-size: 14.5px;
+            line-height: 1.45;
+            box-shadow: var(--shadow);
+            max-width: 78%;
+        }
+        
+        .msg-row.user .bubble {
+            background: var(--green);
+            color: #fff;
+            border-top-left-radius: 18px;
+            border-top-right-radius: 6px;
+        }
+        
+        .bubble b {
+            font-weight: 700;
+        }
+        
+        .bubble .line {
+            margin: 2px 0;
+        }
+        
+        .typing {
+            display: flex;
+            gap: 4px;
+            align-items: center;
+            padding: 6px 2px;
+        }
+        
+        .typing span {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #9BA6A0;
+            animation: blink 1.2s infinite ease-in-out;
+        }
+        
+        .typing span:nth-child(2) {
+            animation-delay: .2s;
+        }
+        
+        .typing span:nth-child(3) {
+            animation-delay: .4s;
+        }
+        
+        @keyframes blink {
+            0%,
+            80%,
+            100% {
+                opacity: .25;
+            }
+            40% {
+                opacity: 1;
+            }
+        }
+        
+        .common-label {
+            font-size: 11.5px;
+            font-weight: 700;
+            letter-spacing: .08em;
+            color: var(--text-soft);
+            margin: 6px 2px 8px;
+            text-transform: uppercase;
+        }
+        
+        .questions {
+            display: flex;
+            flex-direction: column;
+            gap: 9px;
+            margin-bottom: 8px;
+        }
+        
+        .qbtn {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 12px 14px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text);
+            box-shadow: var(--shadow);
+            text-align: left;
+        }
+        
+        .qbtn:active {
+            background: #F7F9F8;
+        }
+        
+        .qbtn .qicon {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--green-tint);
+            color: var(--green-dark);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 15px;
+            flex-shrink: 0;
+        }
+        
+        .qbtn .qtext {
+            flex: 1;
+        }
+        
+        .qbtn .chev {
+            color: #B8C0BC;
+            font-size: 16px;
+        }
+        /* INPUT */
+        
+        .input-bar {
+            position: sticky;
+            bottom: 0;
+            background: var(--bg);
+            padding: 10px 14px 16px;
+        }
+        
+        .input-wrap {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 999px;
+            display: flex;
+            align-items: center;
+            padding: 6px 6px 6px 16px;
+            box-shadow: var(--shadow);
+        }
+        
+        .input-wrap input {
+            flex: 1;
+            border: none;
+            outline: none;
+            font-size: 14.5px;
+            background: transparent;
+            padding: 8px 0;
+            color: var(--text);
+        }
+        
+        .send-btn {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: var(--green);
+            border: none;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            flex-shrink: 0;
+            font-size: 16px;
+        }
+        
+        .send-btn:active {
+            background: var(--green-dark);
+        }
+        
+        .send-btn:disabled {
+            opacity: .5;
+        }
+        
+         ::-webkit-scrollbar {
+            width: 0;
+            height: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app">
+
+        <header>
+            <div class="header-row">
+                <button class="icon-btn" id="backBtn" aria-label="Back">‹</button>
+                <div class="header-title">
+                    <h1>AI Assistant</h1>
+                    <div class="sub">🌿 <span id="cropLabel">Type maize, cowpea, or rice in your question</span></div>
+                </div>
+                <button class="icon-btn" id="menuBtn" aria-label="Menu">☰</button>
+            </div>
+        </header>
+
+        <div class="history-dropdown" id="historyDropdown" aria-hidden="true">
+            <div class="history-header">
+                <div class="history-title">Chat history</div>
+                <div class="history-actions">
+                    <button id="clearHistoryBtn" type="button">Clear</button>
+                </div>
+            </div>
+            <div class="history-list" id="historyList">
+                <div class="history-empty">No saved chat history yet.</div>
+            </div>
+        </div>
+
+        <div class="weather-strip" id="weatherStrip">
+            <div>
+                <div class="wloc" id="wLoc">Locating you…</div>
+                <div class="wsub" id="wSub">Fetching local forecast</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;">
+                <div class="wtemp" id="wTemp">--°</div>
+                <button id="wRefresh">Refresh</button>
+            </div>
+        </div>
+
+        <div class="chat" id="chat">
+            <div class="msg-row ai">
+                <div class="avatar">AI</div>
+                <div class="bubble" id="introBubble">How can I help you with your seeds today? Mention maize, cowpea, or rice in your question.</div>
+            </div>
+
+            <div class="common-label" id="commonLabel">Common questions</div>
+            <div class="questions" id="questions"></div>
+        </div>
+
+        <div class="input-bar">
+            <div class="input-wrap">
+                <input type="text" id="chatInput" placeholder="Ask anything about your scanned seeds…" autocomplete="off">
+                <button class="send-btn" id="sendBtn" aria-label="Send">➤</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /* =========================================================
+                                                                                                                                                                                                                                                                                   KNOWLEDGE BASE
+                                                                                                                                                                                                                                                                                   ========================================================= */
+        const KB = {
+            maize: {
+                name: "Maize",
+                emoji: "🌽",
+                ideal: {
+                    tempMin: 18,
+                    tempMax: 30,
+                    rainMinMm: 500,
+                    rainMaxMm: 800,
+                    germMinSoilTemp: 10
+                },
+                planting: "Plant maize once soil temperature stays above 10°C (50°F) and the risk of frost has passed. Sow seeds 3–5cm deep, in rows spaced 75–90cm apart with 20–25cm between plants. Maize thrives with 500–800mm of rain across the season and does best when the first weeks of growth get steady moisture without waterlogging.",
+                harvesting: "Maize is ready 90–120 days after planting, depending on variety. Look for a dark 'black layer' at the base of the kernel and husks turning brown and papery. Grain moisture at harvest is usually 20–25% — harvest promptly once you hit that point to avoid field losses to birds, rot, or lodging.",
+                storage: "Dry maize down to 12–13% moisture before storing. Keep it in a cool, dry, well-ventilated store, off the ground, in sealed or hermetic (PICS) bags where possible. Above 14% moisture or 70% relative humidity, mould and weevils take hold fast.",
+                viability: "Maize seed usually loses viability from: high storage moisture (mould, heat damage), weevil/insect damage, poor drying before storage, seed age beyond 1–2 seasons, or physical cracking of the seed coat during shelling. A quick germination test (roll 100 seeds in a damp cloth for 4–5 days) tells you the real rate before planting.",
+                weather: "Maize wants warm days (25–30°C), nights not below 15°C, full sun, and consistent moisture — especially during silking/tasseling, when drought stress cuts yield the most. Waterlogging for more than 2–3 days can suffocate roots.",
+                pests: "Watch for fall armyworm and stem borer in the field, and maize weevil in storage. Key diseases: grey leaf spot, maize streak virus, common rust, and downy mildew. Scout weekly and rotate with a non-cereal crop to break pest cycles."
+            },
+            cowpea: {
+                name: "Cowpea",
+                emoji: "🫘",
+                ideal: {
+                    tempMin: 20,
+                    tempMax: 35,
+                    rainMinMm: 400,
+                    rainMaxMm: 700,
+                    germMinSoilTemp: 18
+                },
+                planting: "Sow cowpea once soil temperature is above 18°C and rains are established. Plant 2–3cm deep, rows 60–75cm apart, 20cm between plants. Cowpea is drought-tolerant and prefers well-drained soil — it does poorly in waterlogged fields. Total season rainfall of 400–700mm is ideal.",
+                harvesting: "Grain cowpea matures in 60–90 days. Harvest pods once they've dried and turned brown/straw-coloured — pick promptly, since dry pods shatter and drop seed if left too long in the field. For fresh pods (green harvest), pick 3–4 weeks after flowering.",
+                storage: "Dry seed to about 12% moisture. Store in airtight or hermetic bags (PICS triple-layer bags work very well) to block bruchid/cowpea weevils, which are the number one storage threat. Keep containers in a cool, dark, dry place.",
+                viability: "Loss of viability in cowpea is most often caused by bruchid weevil infestation in storage, poor drying, high humidity, or seed older than one storage season. Bruchids can wipe out germination within a few months if seed isn't sealed properly.",
+                weather: "Cowpea handles heat well (up to 35°C) and tolerates short dry spells better than most legumes, but it still needs adequate moisture at flowering and pod-fill. Waterlogged or poorly drained soil quickly causes root rot.",
+                pests: "Main field pests: aphids, pod borers and Striga (parasitic weed). Storage pest: cowpea weevil/bruchid. Watch also for bacterial blight and cowpea mosaic virus, both of which spread fast in humid, crowded plantings."
+            },
+            rice: {
+                name: "Rice",
+                emoji: "🌾",
+                ideal: {
+                    tempMin: 20,
+                    tempMax: 35,
+                    rainMinMm: 1000,
+                    rainMaxMm: 1500,
+                    germMinSoilTemp: 13
+                },
+                planting: "Rice germinates once soil/water temperature is above 13°C. For lowland rice, transplant seedlings at 20–25 days old into standing water (2–5cm). For upland/rainfed rice, sow directly once rains are reliable. Total water need (rain + irrigation) is roughly 1000–1500mm across the season.",
+                harvesting: "Rice matures 105–150 days after sowing depending on variety. Harvest when about 80–85% of grains have turned golden-yellow and moisture is around 20–25%. Harvesting too early gives chalky, immature grain; too late increases shattering losses.",
+                storage: "Dry paddy to 13–14% moisture before storage. Store in a cool, dry, well-aerated space, ideally in sealed bags, to prevent rice weevil infestation and mould. Avoid storing on bare ground — moisture wicks up fast.",
+                viability: "Rice seed viability drops mainly from high moisture at storage (encourages mould and heat damage), rice weevil damage, seed age beyond 8–12 months without proper drying/sealing, and exposure to temperature swings in storage.",
+                weather: "Rice wants warm, humid conditions (20–35°C) with abundant, consistent water availability, and full sun. Cold snaps below 15°C during flowering can cause spikelet sterility and major yield loss.",
+                pests: "Key field pests: rice stem borer and brown planthopper. Storage pest: rice weevil. Major diseases: rice blast and bacterial leaf blight — both spread quickly in dense, humid canopies, so good spacing and airflow matter."
+            }
+        };
+
+        const SUPPORTED_LANGS = ["en", "yo", "ha", "ig", "fr"];
+
+        function getLangFromQuery() {
+            const params = new URLSearchParams(window.location.search);
+            const lang = params.get("lang");
+            return SUPPORTED_LANGS.includes(lang) ? lang : "en";
+        }
+
+        let appLang = getLangFromQuery();
+
+        const UI_TEXT = {
+            en: {
+                introNoCrop: "How can I help you with your seeds today? Mention maize, cowpea, or rice in your question.",
+                commonLabel: "Common questions",
+                placeholder: "Ask anything about your scanned seeds…",
+                cropPrompt: "How can I help you with your {crop} seeds today?",
+                askCropFirst: "Please mention the crop name first: maize, cowpea, or rice. Then ask your question so I can answer for the right seed.",
+                cropAcknowledged: "Great, I can now answer questions about <b>{crop}</b>. Ask about planting, harvesting, storage, viability, weather, or pests.",
+                greeting: "Hey there! I can help with planting, harvesting, storage, viability, pests/diseases, and live weather guidance for <b>{crop}</b>. What would you like to know?",
+                weatherNoAccess: "I don't have your local weather yet — allow location access (or tap Refresh on the weather card) and I'll compare it against what {crop} needs.",
+                answerNotCertain: "I'm not certain about that one yet. For <b>{crop}</b> I can help with: planting time, harvesting time, seed storage, seed viability, ideal/current weather, and pests & diseases — for maize, cowpea, or rice. Try rephrasing, or tap one of the common questions below.",
+                locatingYou: "Locating you…",
+                fetchingLocalForecast: "Fetching local forecast",
+                refreshBtn: "Refresh",
+                weatherTempUnknown: "--°",
+                weatherUnavailable: "Location unavailable",
+                weatherAllowLocation: "Tap Refresh, then allow location access",
+                localForecast: "Local forecast",
+                yourLocation: "Your location",
+                noCropYet: "Type maize, cowpea, or rice in your question"
+            },
+            yo: {
+                introNoCrop: "Báwo ni mo ṣe lè ràn é lórí irugbin rẹ? Sọ maize, cowpea, tàbí rice nínú ìbéèrè rẹ.",
+                commonLabel: "Ìbéèrè wọpọ",
+                placeholder: "Béèrè nípa eyikeyi irugbin ti o ti ṣàwárí…",
+                cropPrompt: "Báwo ni mo ṣe lè ràn é lórí irugbin {crop} rẹ lónìí?",
+                askCropFirst: "Jọ̀wọ́ darukọ orúkọ irugbin náà kọ́kọ́: maize, cowpea, tàbí rice. Lẹ̀yìn náà béèrè ìbéèrè rẹ kí n lè dá ọ lórí irugbin tó yẹ.",
+                cropAcknowledged: "Ó dára, mo lè dá ìbéèrè lórí <b>{crop}</b> báyìí. Béèrè nípa ìgbìn, ìkúgbà, ìpamọ́, ìtóbi, oju-ọjọ́ tàbí kokoro.",
+                greeting: "Ẹ n lẹ́! Mo lè ràn ọ lọ́wọ́ nípa ìgbìn, ìkúgbà, ìpamọ́, ìtóbi, àkúnya/bìkítà àti ìmúlò oju-ọjọ́ fún <b>{crop}</b>. Kí ni o fẹ́ mọ̀?",
+                weatherNoAccess: "N kò ní ìkànìyàn oju-ọjọ́ rẹ̀ — jẹwọ ìwọ̀le ipo (tàbí tẹ Refresh ní kaadi oju-ọjọ́) kí n lè fiwé e pẹ̀lú ohun tí {crop} nílò.",
+                answerNotCertain: "Mi ò dájú nípa èyí. Fun <b>{crop}</b> mo lè ṣe iranlọwọ nípa: àkókò ìgbìn, ìkúgbà, ìpamọ́, ìtóbi irugbin, oju-ọjọ́, àti kokoro. Gbìyànjú láti tún un ṣe, tàbí tẹ orí ìbéèrè wọpọ lórí.",
+                locatingYou: "N ń wá ipo rẹ…",
+                fetchingLocalForecast: "N ń gba àbájáde oju-ọjọ́",
+                refreshBtn: "Tunṣe",
+                weatherTempUnknown: "--°",
+                weatherUnavailable: "Ipo ko si",
+                weatherAllowLocation: "Tẹ Refresh, lẹhinna gba wọle ipo",
+                localForecast: "Akojọ agbegbe",
+                noCropYet: "Kọ maize, cowpea, tàbí rice nínú ìbéèrè rẹ"
+            },
+            ha: {
+                introNoCrop: "Ta yaya zan iya taimaka maka da iri? Rubuta maize, cowpea, ko rice a cikin tambayarka.",
+                commonLabel: "Tambayoyi na gama gari",
+                placeholder: "Tambayi komai game da irin da ka duba…",
+                cropPrompt: "Ta yaya zan iya taimaka maka da irin {crop} ɗinka a yau?",
+                askCropFirst: "Da fatan za a ambaci sunan iri da farko: maize, cowpea, ko rice. Sannan ka tambayi tambayarka domin in amsa maka daidai.",
+                cropAcknowledged: "Madalla, yanzu zan iya amsa tambayoyi game da <b>{crop}</b>. Tambaya game da shuka, girbi, ajiya, ƙarfi, yanayi, ko kwari.",
+                greeting: "Sannu! Zan iya taimaka maka game da shuka, girbi, ajiya, ƙarfi, kwari/ciwo, da jagorancin yanayi mai rai don <b>{crop}</b>. Me kake son sani?",
+                weatherNoAccess: "Ban sami yanayin wurinka ba tukuna — yi izinin samun wurin (ko danna Refresh a kati na yanayi) zan kwatanta shi da abin da {crop} ke bukata.",
+                answerNotCertain: "Ban tabbata game da wannan ba tukuna. Don <b>{crop}</b> zan iya taimaka maka da: lokacin shuka, lokacin girbi, ajiya, ƙarfin iri, yanayi mai kyau/na yanzu, da kwari & cututtuka. Gwada sake bayyana, ko danna ɗaya daga cikin tambayoyin gama gari a ƙasa.",
+                locatingYou: "Ana gano wurin ku…",
+                fetchingLocalForecast: "Ana ɗaukar hasashen yanayi",
+                refreshBtn: "Sabunta",
+                weatherTempUnknown: "--°",
+                weatherUnavailable: "Ba a samu wurin ba",
+                weatherAllowLocation: "Danna Refresh, sa’annan ka ba da izinin wurin",
+                localForecast: "Hasashen gida",
+                yourLocation: "Matsayinka",
+                noCropYet: "Rubuta maize, cowpea, ko rice a cikin tambayarka"
+            },
+            ig: {
+                introNoCrop: "Kedu ka m ga-esi nyere gị aka na mkpụrụ? Dee maize, cowpea, ma ọ bụ rice n’ ajụjụ gị.",
+                commonLabel: "Ajụjụ a na-ajụkarị",
+                placeholder: "Jụọ ihe ọ bụla gbasara mkpụrụ ị tụrụ…",
+                cropPrompt: "Kedu ka m ga-esi nyere gị aka na mkpụrụ {crop} gị taa?",
+                askCropFirst: "Biko kpọọ aha mkpụrụ ahụ mbụ: maize, cowpea, ma ọ bụ rice. Mgbe ahụ jụọ ajụjụ gị ka m nwee ike zaa maka mkpụrụ ziri ezi.",
+                cropAcknowledged: "O di mma, ugbu a m nwere ike ịza ajụjụ gbasara <b>{crop}</b>. Jụọ banyere ịkụ, iweta, nchekwa, ịdị ndụ, ihu igwe, ma ọ bụ nje.",
+                greeting: "Nnọọ! Enwere m ike inyere gị aka na ịkụ, iweta, nchekwa, ịdị ndụ, nje/ ọrịa, na nduzi ihu igwe maka <b>{crop}</b>. Kedu ihe ịchọrọ ịma?",
+                weatherNoAccess: "Enweghị m ihu igwe gị ugbu a — kwe ka m nweta ọnọdụ (ma ọ bụ pịa Refresh na kaadị ihu igwe) m ga-atụnyere ya na ihe {crop} chọrọ.",
+                answerNotCertain: "Anaghị m enwe nkwenye gbasara nke ahụ ugbu a. Maka <b>{crop}</b> m nwere ike inyere gị: oge ịkụ, oge iweta, nchekwa mkpụrụ, ịdị ndụ, ihu igwe kwesịrị ekwesị/nke ugbu a, na nje & ọrịa. Gbalịa tụgharia ya, ma ọ bụ pịa otu n’ime ajụjụ a na-ajụkarị n’ime ala.",
+                locatingYou: "Na-achọta gị…",
+                fetchingLocalForecast: "Na-ewepụta amụma ihu igwe",
+                refreshBtn: "Mee Refresh",
+                weatherTempUnknown: "--°",
+                weatherUnavailable: "Anaghị m ahụ ọnọdụ",
+                weatherAllowLocation: "Pịa Refresh, ma kwado ọnọdụ",
+                localForecast: "Amụma mpaghara",
+                yourLocation: "Ebe gị",
+                noCropYet: "Dee maize, cowpea, ma ọ bụ rice n’ ajụjụ gị"
+            },
+            fr: {
+                introNoCrop: "Comment puis-je vous aider avec vos semences ? Mentionnez maize, cowpea ou rice dans votre question.",
+                commonLabel: "Questions fréquentes",
+                placeholder: "Demandez n'importe quoi sur vos semences scannées…",
+                cropPrompt: "Comment puis-je vous aider avec vos semences de {crop} aujourd'hui ?",
+                askCropFirst: "Veuillez d'abord mentionner le nom de la culture : maize, cowpea ou rice. Ensuite, posez votre question pour que je puisse répondre correctement.",
+                cropAcknowledged: "Super, je peux maintenant répondre aux questions sur <b>{crop}</b>. Demandez sur la plantation, la récolte, le stockage, la viabilité, la météo ou les ravageurs.",
+                greeting: "Bonjour ! Je peux vous aider pour la plantation, la récolte, le stockage, la viabilité, les ravageurs/maladies et les conseils météo pour <b>{crop}</b>. Que voulez-vous savoir ?",
+                weatherNoAccess: "Je n'ai pas encore vos données météo locales — autorisez l'accès à la localisation (ou appuyez sur Rafraîchir sur la carte météo) et je comparerai cela à ce que {crop} nécessite.",
+                answerNotCertain: "Je ne suis pas certain de cela pour le moment. Pour <b>{crop}</b>, je peux aider avec : le moment de plantation, le moment de la récolte, le stockage des semences, la viabilité des semences, la météo idéale/actuelle et les ravageurs & maladies. Reformulez ou appuyez sur l'une des questions fréquentes ci-dessous.",
+                locatingYou: "Localisation en cours…",
+                fetchingLocalForecast: "Récupération des prévisions locales",
+                refreshBtn: "Rafraîchir",
+                weatherTempUnknown: "--°",
+                weatherUnavailable: "Emplacement indisponible",
+                weatherAllowLocation: "Appuyez sur Rafraîchir, puis autorisez l'accès à la localisation",
+                localForecast: "Prévisions locales",
+                yourLocation: "Votre emplacement",
+                noCropYet: "Tapez maize, cowpea ou rice dans votre question"
+            }
+        };
+
+        const QUESTION_LABELS = {
+            en: {
+                planting: "Best planting time",
+                harvesting: "Best harvesting time",
+                storage: "Seed storage",
+                viability: "Why are some seeds not viable?",
+                weather: "Ideal weather",
+                pests: "Common pests and diseases"
+            },
+            yo: {
+                planting: "Àkókò ìgbìn tó dára jùlọ",
+                harvesting: "Àkókò ìkúgbà tó dára",
+                storage: "Ìpamọ́ irugbin",
+                viability: "Kí ló ń fa kí irugbin má ṣe wọlé?",
+                weather: "Oju-ọjọ́ tó yẹ",
+                pests: "Àwọn kokoro àti àrùn wọpọ"
+            },
+            ha: {
+                planting: "Mafi ingantacciyar lokacin shuka",
+                harvesting: "Mafi ingantacciyar lokacin girbi",
+                storage: "Ajiya iri",
+                viability: "Me yasa wasu iri ba su da rai?",
+                weather: "Mafi kyawun yanayi",
+                pests: "Kwari da cututtuka na gama gari"
+            },
+            ig: {
+                planting: "Oge ịkụ kacha mma",
+                harvesting: "Oge iweta kacha mma",
+                storage: "Nchekwa mkpụrụ",
+                viability: "Gịnị kpatara ụfọdụ mkpụrụ na-adịghị ndụ?",
+                weather: "Ihu igwe zuru oke",
+                pests: "Nje na ọrịa a na-ahụkarị"
+            },
+            fr: {
+                planting: "Meilleur moment de plantation",
+                harvesting: "Meilleur moment de récolte",
+                storage: "Stockage des semences",
+                viability: "Pourquoi certaines semences ne sont-elles pas viables ?",
+                weather: "Météo idéale",
+                pests: "Ravageurs et maladies courants"
+            }
+        };
+
+        function t(key, vars = {}) {
+            const value = (UI_TEXT[appLang] && UI_TEXT[appLang][key]) || UI_TEXT.en[key] || key;
+            return Object.keys(vars).reduce((text, varKey) => text.replace(new RegExp(`\{${varKey}\}`, "g"), vars[varKey]), value);
+        }
+
+        const COMMON_QUESTIONS = [{
+            icon: "☀️",
+            label: "Best planting time",
+            topic: "planting"
+        }, {
+            icon: "🌿",
+            label: "Best harvesting time",
+            topic: "harvesting"
+        }, {
+            icon: "🏬",
+            label: "Seed storage",
+            topic: "storage"
+        }, {
+            icon: "❓",
+            label: "Why are some seeds not viable?",
+            topic: "viability"
+        }, {
+            icon: "🌦️",
+            label: "Ideal weather",
+            topic: "weather"
+        }, {
+            icon: "🐛",
+            label: "Common pests and diseases",
+            topic: "pests"
+        }];
+
+        function applyTranslations() {
+            cropLabel.textContent = currentCrop ? KB[currentCrop].name : t("noCropYet");
+            introBubble.textContent = currentCrop ? t("cropPrompt", {
+                crop: KB[currentCrop].name
+            }) : t("introNoCrop");
+            document.getElementById("commonLabel").textContent = t("commonLabel");
+            inputEl.placeholder = t("placeholder");
+            wLoc.textContent = t("locatingYou");
+            wSub.textContent = t("fetchingLocalForecast");
+            document.getElementById("wRefresh").textContent = t("refreshBtn");
+            wTemp.textContent = t("weatherTempUnknown");
+            document.documentElement.lang = appLang;
+            renderQuestions();
+        }
+
+        /* =========================================================
+           STATE
+           ========================================================= */
+        let currentCrop = null;
+        let weather = null; // {locationName, current:{temp,precip,code}, dailyRainSum, dailyAvgTemp, raw}
+        let weatherLoading = false;
+
+        const chatEl = document.getElementById("chat");
+        const questionsEl = document.getElementById("questions");
+        const introBubble = document.getElementById("introBubble");
+        const cropLabel = document.getElementById("cropLabel");
+        const inputEl = document.getElementById("chatInput");
+        const sendBtn = document.getElementById("sendBtn");
+        const menuBtn = document.getElementById("menuBtn");
+        const historyDropdown = document.getElementById("historyDropdown");
+        const historyList = document.getElementById("historyList");
+        const clearHistoryBtn = document.getElementById("clearHistoryBtn");
+
+        const HISTORY_STORAGE_KEY = "seedScannerChatHistory";
+        let chatHistory = loadChatHistory();
+
+        function loadChatHistory() {
+            try {
+                const raw = localStorage.getItem(HISTORY_STORAGE_KEY);
+                return raw ? JSON.parse(raw) : [];
+            } catch (err) {
+                return [];
+            }
+        }
+
+        function saveChatHistory() {
+            localStorage.setItem(HISTORY_STORAGE_KEY, JSON.stringify(chatHistory.slice(-50)));
+        }
+
+        function recordChatHistory(role, text) {
+            if (!text || !text.trim()) return;
+            chatHistory.push({
+                role,
+                text: text.trim(),
+                time: Date.now()
+            });
+            if (chatHistory.length > 50) chatHistory = chatHistory.slice(-50);
+            saveChatHistory();
+        }
+
+        function renderHistory() {
+            historyList.innerHTML = "";
+            if (!chatHistory.length) {
+                historyList.innerHTML = `<div class="history-empty">No saved chat history yet.</div>`;
+                return;
+            }
+            chatHistory.slice().reverse().forEach(entry => {
+                const item = document.createElement("div");
+                item.className = "history-item";
+                item.innerHTML = `<div class="history-role">${entry.role === "user" ? "You" : "AI"}</div><div class="history-text">${entry.text}</div>`;
+                historyList.appendChild(item);
+            });
+        }
+
+        function toggleHistoryDropdown() {
+            const isOpen = historyDropdown.classList.toggle("open");
+            historyDropdown.setAttribute("aria-hidden", String(!isOpen));
+            if (isOpen) {
+                renderHistory();
+            }
+        }
+
+        function closeHistoryDropdown() {
+            historyDropdown.classList.remove("open");
+            historyDropdown.setAttribute("aria-hidden", "true");
+        }
+
+        menuBtn.addEventListener("click", (event) => {
+            event.stopPropagation();
+            toggleHistoryDropdown();
+        });
+
+        clearHistoryBtn.addEventListener("click", () => {
+            chatHistory = [];
+            saveChatHistory();
+            renderHistory();
+        });
+
+        document.addEventListener("click", (event) => {
+            if (!historyDropdown.contains(event.target) && event.target !== menuBtn) {
+                closeHistoryDropdown();
+            }
+        });
+
+        /* =========================================================
+           RENDER: common questions
+           ========================================================= */
+        function renderQuestions() {
+            questionsEl.innerHTML = "";
+            COMMON_QUESTIONS.forEach(q => {
+                const label = (QUESTION_LABELS[appLang] && QUESTION_LABELS[appLang][q.topic]) || q.label;
+                const btn = document.createElement("div");
+                btn.className = "qbtn";
+                btn.innerHTML = `<div class="qicon">${q.icon}</div><div class="qtext">${label}</div><div class="chev">›</div>`;
+                btn.addEventListener("click", () => handleUserMessage(label, q.topic));
+                questionsEl.appendChild(btn);
+            });
+        }
+
+
+        function setCrop(crop) {
+            currentCrop = crop;
+            const k = KB[crop];
+            cropLabel.textContent = k.name;
+            introBubble.textContent = t("cropPrompt", {
+                crop: k.name
+            });
+        }
+
+        /* =========================================================
+           WEATHER
+           ========================================================= */
+        const wLoc = document.getElementById("wLoc");
+        const wSub = document.getElementById("wSub");
+        const wTemp = document.getElementById("wTemp");
+        applyTranslations();
+
+        const WMO = {
+            0: "Clear sky",
+            1: "Mainly clear",
+            2: "Partly cloudy",
+            3: "Overcast",
+            45: "Fog",
+            48: "Fog",
+            51: "Light drizzle",
+            53: "Drizzle",
+            55: "Dense drizzle",
+            61: "Light rain",
+            63: "Rain",
+            65: "Heavy rain",
+            71: "Light snow",
+            73: "Snow",
+            75: "Heavy snow",
+            80: "Rain showers",
+            81: "Rain showers",
+            82: "Violent showers",
+            95: "Thunderstorm",
+            96: "Thunderstorm w/ hail",
+            99: "Thunderstorm w/ hail"
+        };
+
+        async function loadWeather() {
+            if (weatherLoading) return weather;
+            weatherLoading = true;
+            wLoc.textContent = t("locatingYou");
+            wSub.textContent = t("fetchingLocalForecast");
+            try {
+                const pos = await new Promise((res, rej) => {
+                    if (!navigator.geolocation) return rej(new Error("no-geo"));
+                    navigator.geolocation.getCurrentPosition(res, rej, {
+                        timeout: 10000
+                    });
+                });
+                const lat = pos.coords.latitude,
+                    lon = pos.coords.longitude;
+
+                const [wxRes, geoRes] = await Promise.all([
+                    fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,precipitation,weathercode,relative_humidity_2m&daily=precipitation_sum,temperature_2m_max,temperature_2m_min,weathercode&forecast_days=7&timezone=auto`),
+                    fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=en`).catch(() => null)
+                ]);
+                const wx = await wxRes.json();
+                let locationName = t("yourLocation");
+                if (geoRes && geoRes.ok) {
+                    const g = await geoRes.json();
+                    locationName = [g.locality || g.city, g.principalSubdivision || g.countryName].filter(Boolean).join(", ") || locationName;
+                }
+
+                const rainSum = ((wx.daily && wx.daily.precipitation_sum) || []).reduce((a, b) => a + (b || 0), 0);
+                const tMaxAvg = avg((wx.daily && wx.daily.temperature_2m_max) || []);
+                const tMinAvg = avg((wx.daily && wx.daily.temperature_2m_min) || []);
+
+                weather = {
+                    locationName,
+                    current: {
+                        temp: wx.current && wx.current.temperature_2m,
+                        code: wx.current && wx.current.weathercode,
+                        humidity: wx.current && wx.current.relative_humidity_2m,
+                        precip: wx.current && wx.current.precipitation
+                    },
+                    week: {
+                        rainSum7d: rainSum,
+                        avgHigh: tMaxAvg,
+                        avgLow: tMinAvg
+                    },
+                    raw: wx
+                };
+
+                wLoc.textContent = locationName;
+                wSub.textContent = WMO[weather.current.code] || t("localForecast");
+                wTemp.textContent = weather.current && weather.current.temp != null ? `${Math.round(weather.current.temp)}°C` : t("weatherTempUnknown");
+            } catch (err) {
+                weather = null;
+                wLoc.textContent = t("weatherUnavailable");
+                wSub.textContent = t("weatherAllowLocation");
+                wTemp.textContent = t("weatherTempUnknown");
+            } finally {
+                weatherLoading = false;
+            }
+            return weather;
+        }
+
+        function avg(arr) {
+            return arr.length ? arr.reduce((a, b) => a + b, 0) / arr.length : null;
+        }
+
+        document.getElementById("wRefresh").addEventListener("click", loadWeather);
+        loadWeather();
+
+        /* =========================================================
+           CHAT RENDERING
+           ========================================================= */
+        function scrollBottom() {
+            chatEl.scrollTop = chatEl.scrollHeight;
+        }
+
+        function addUserBubble(text) {
+            const row = document.createElement("div");
+            row.className = "msg-row user";
+            row.innerHTML = `<div class="avatar user">You</div><div class="bubble"></div>`;
+            row.querySelector(".bubble").textContent = text;
+            chatEl.appendChild(row);
+            scrollBottom();
+            recordChatHistory("user", text);
+        }
+
+        function addAiBubble(html) {
+            const row = document.createElement("div");
+            row.className = "msg-row ai";
+            row.innerHTML = `<div class="avatar">AI</div><div class="bubble">${html}</div>`;
+            chatEl.appendChild(row);
+            scrollBottom();
+            const plainText = row.querySelector(".bubble").textContent;
+            recordChatHistory("ai", plainText);
+            return row;
+        }
+
+        function addTyping() {
+            const row = document.createElement("div");
+            row.className = "msg-row ai";
+            row.innerHTML = `<div class="avatar">AI</div><div class="bubble"><div class="typing"><span></span><span></span><span></span></div></div>`;
+            chatEl.appendChild(row);
+            scrollBottom();
+            return row;
+        }
+
+        /* =========================================================
+           NLU — topic + crop detection
+           ========================================================= */
+        const CROP_KEYWORDS = {
+            maize: ["maize", "corn", "mealie"],
+            cowpea: ["cowpea", "black-eyed pea", "black eyed pea", "beans", "blackeye"],
+            rice: ["rice", "paddy"]
+        };
+
+        const TOPIC_KEYWORDS = {
+            planting: ["plant", "planting", "sow", "sowing", "when to plant", "seeding time", "best time to plant"],
+            harvesting: ["harvest", "harvesting", "maturity", "when to pick", "ready to harvest"],
+            storage: ["store", "storage", "keep seed", "warehouse", "bag seed", "how to store"],
+            viability: ["viable", "viability", "germinate", "germination", "not viable", "seeds not", "won't grow", "wont grow", "dead seed", "fail to grow"],
+            weather: ["weather", "forecast", "rain", "rainfall", "temperature", "climate", "today's weather", "this week", "humid", "hot", "cold"],
+            pests: ["pest", "disease", "insect", "infestation", "bug", "weevil", "blight", "armyworm", "borer", "virus", "fungus", "mould", "mold"]
+        };
+
+        const GREETINGS = ["hi", "hello", "hey", "good morning", "good afternoon", "good evening"];
+
+        function detectCrop(msg) {
+            const low = msg.toLowerCase();
+            for (const crop in CROP_KEYWORDS) {
+                if (CROP_KEYWORDS[crop].some(k => low.includes(k))) return crop;
+            }
+            return null;
+        }
+
+        function detectTopic(msg) {
+            const low = msg.toLowerCase();
+            let best = null,
+                bestScore = 0;
+            for (const topic in TOPIC_KEYWORDS) {
+                const score = TOPIC_KEYWORDS[topic].filter(k => low.includes(k)).length;
+                if (score > bestScore) {
+                    bestScore = score;
+                    best = topic;
+                }
+            }
+            return bestScore > 0 ? best : null;
+        }
+
+        /* =========================================================
+           WEATHER-AWARE REASONING
+           ========================================================= */
+        function weatherVerdict(crop) {
+            const k = KB[crop];
+            if (!weather) {
+                return t("weatherNoAccess", {
+                    crop: k.name.toLowerCase()
+                });
+            }
+            const t = weather.current.temp;
+            const cond = WMO[weather.current.code] || "current conditions";
+            const rain7 = weather.week.rainSum7d;
+            const inRange = t >= k.ideal.tempMin && t <= k.ideal.tempMax;
+            const lines = [];
+            lines.push(`In <b>${weather.locationName}</b> right now it's <b>${Math.round(t)}°C</b> and ${cond.toLowerCase()}, with about <b>${rain7.toFixed(0)}mm</b> of rain forecast over the next 7 days.`);
+            lines.push(`${k.name} grows best between <b>${k.ideal.tempMin}–${k.ideal.tempMax}°C</b>. Current temperature is ${inRange ? "within" : "outside"} that range${inRange ? " — good conditions." : "."}`);
+            if (rain7 < 5) {
+                lines.push(`Very little rain is expected this week — if you're planting or your crop is at flowering/pod-fill, plan for irrigation.`);
+            } else if (rain7 > 60) {
+                lines.push(`Heavy rain is expected — watch for waterlogging, especially at germination or if fields drain slowly.`);
+            }
+            return lines.join(" ");
+        }
+
+        /* =========================================================
+           ANSWER BUILDER
+           ========================================================= */
+        async function buildAnswer(userText, forcedTopic) {
+            const cropFromMsg = detectCrop(userText);
+            if (cropFromMsg) setCrop(cropFromMsg);
+            const k = currentCrop ? KB[currentCrop] : null;
+            const topic = forcedTopic || detectTopic(userText);
+            const low = userText.toLowerCase();
+
+            if (!currentCrop) {
+                if (cropFromMsg && !topic) {
+                    return t("cropAcknowledged", {
+                        crop: KB[cropFromMsg].name
+                    });
+                }
+                return t("askCropFirst");
+            }
+
+            if (!topic && GREETINGS.some(g => low.includes(g))) {
+                return t("greeting", {
+                    crop: k.name
+                });
+            }
+
+            switch (topic) {
+                case "planting":
+                    {
+                        await loadWeather();
+                        return `<div class="line"><b>${k.emoji} ${k.name} — ${QUESTION_LABELS[appLang]?.planting || "Best planting time"}</b></div><div class="line">${k.planting}</div><div class="line">${weatherVerdict(currentCrop)}</div>`;
+                    }
+                case "harvesting":
+                    return `<div class="line"><b>${k.emoji} ${k.name} — ${QUESTION_LABELS[appLang]?.harvesting || "Best harvesting time"}</b></div><div class="line">${k.harvesting}</div>`;
+                case "storage":
+                    return `<div class="line"><b>${k.emoji} ${k.name} — ${QUESTION_LABELS[appLang]?.storage || "Seed storage"}</b></div><div class="line">${k.storage}</div>`;
+                case "viability":
+                    return `<div class="line"><b>${k.emoji} ${k.name} — ${QUESTION_LABELS[appLang]?.viability || "Why are some seeds not viable?"}</b></div><div class="line">${k.viability}</div>`;
+                case "weather":
+                    {
+                        await loadWeather();
+                        return `<div class="line"><b>${k.emoji} ${k.name} — ${QUESTION_LABELS[appLang]?.weather || "Ideal weather"}</b></div><div class="line">${k.weather}</div><div class="line">${weatherVerdict(currentCrop)}</div>`;
+                    }
+                case "pests":
+                    return `<div class="line"><b>${k.emoji} ${k.name} — ${QUESTION_LABELS[appLang]?.pests || "Common pests & diseases"}</b></div><div class="line">${k.pests}</div>`;
+                default:
+                    return t("answerNotCertain", {
+                        crop: k.name
+                    });
+            }
+        }
+
+        /* =========================================================
+           MESSAGE HANDLER
+           ========================================================= */
+        async function handleUserMessage(text, forcedTopic) {
+            if (!text || !text.trim()) return;
+            addUserBubble(text);
+            inputEl.value = "";
+            const typingRow = addTyping();
+            const delay = 550 + Math.random() * 400;
+            const answer = await buildAnswer(text, forcedTopic);
+            setTimeout(() => {
+                typingRow.remove();
+                addAiBubble(answer);
+            }, delay);
+        }
+
+        sendBtn.addEventListener("click", () => handleUserMessage(inputEl.value));
+        inputEl.addEventListener("keydown", (e) => {
+            if (e.key === "Enter") handleUserMessage(inputEl.value);
+        });
+
+        document.getElementById("backBtn").addEventListener("click", () => {
+            if (history.length > 1) history.back();
+        });
+    </script>
+</body>
+
+</html>

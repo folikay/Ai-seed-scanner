@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Choose Language</title>
+    <style>
+         :root {
+            --green: #1DB954;
+            --green-light: #E8F9EF;
+            --green-border: #1DB954;
+            --text-dark: #0F1B12;
+            --text-gray: #8A8F8C;
+            --border-gray: #E7E8E6;
+            --bg: #FFFFFF;
+        }
+        
+        * {
+            box-sizing: border-box;
+        }
+        
+        body {
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background: #F5F5F5;
+            display: flex;
+            justify-content: center;
+            padding: 24px 12px;
+        }
+        
+        .phone {
+            width: 100%;
+            max-width: 390px;
+            background: var(--bg);
+            border-radius: 36px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+            overflow: hidden;
+            min-height: 780px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .page {
+            display: none;
+            flex-direction: column;
+            flex: 1;
+            padding: 24px 20px 20px;
+        }
+        
+        .page.active {
+            display: flex;
+        }
+        
+        .back-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #F3F4F3;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            margin-bottom: 28px;
+            font-size: 18px;
+            color: var(--text-dark);
+        }
+        
+        .header-row {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 6px;
+        }
+        
+        .icon-badge {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            background: var(--green-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            color: var(--green);
+            flex-shrink: 0;
+        }
+        
+        h1 {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--text-dark);
+            margin: 0;
+        }
+        
+        .subtitle {
+            color: var(--text-gray);
+            font-size: 15px;
+            margin: 10px 0 24px 0;
+        }
+        
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+        
+        .option {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 18px 20px;
+            border-radius: 16px;
+            border: 2px solid var(--border-gray);
+            cursor: pointer;
+            font-size: 17px;
+            font-weight: 600;
+            color: var(--text-dark);
+            background: #fff;
+            transition: border-color .15s ease, background .15s ease;
+            user-select: none;
+        }
+        
+        .option:hover {
+            border-color: #c9ccc9;
+        }
+        
+        .option.selected {
+            border-color: var(--green-border);
+            background: var(--green-light);
+            color: var(--green);
+        }
+        
+        .radio {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            border: 2px solid #C9CCC9;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .option.selected .radio {
+            border-color: var(--green);
+            background: var(--green);
+            color: #fff;
+            font-size: 13px;
+        }
+        
+        .spacer {
+            flex: 1;
+        }
+        
+        .continue-btn {
+            width: 100%;
+            padding: 18px;
+            border-radius: 16px;
+            border: none;
+            background: var(--green);
+            color: #fff;
+            font-size: 17px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 24px;
+            transition: opacity .15s ease;
+        }
+        
+        .continue-btn:disabled {
+            opacity: .5;
+            cursor: not-allowed;
+        }
+        /* ---- Page 2 (linked page) ---- */
+        
+        .welcome-icon {
+            font-size: 40px;
+            margin-bottom: 14px;
+        }
+        
+        .card {
+            background: #F8FBF9;
+            border: 1px solid var(--border-gray);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 16px;
+        }
+        
+        .card h3 {
+            margin: 0 0 6px 0;
+            font-size: 16px;
+            color: var(--text-dark);
+        }
+        
+        .card p {
+            margin: 0;
+            font-size: 14px;
+            color: var(--text-gray);
+            line-height: 1.5;
+        }
+        
+        .lang-tag {
+            display: inline-block;
+            margin-top: 18px;
+            padding: 6px 14px;
+            background: var(--green-light);
+            color: var(--green);
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 700;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="phone">
+
+        <!-- PAGE 1: Choose Language -->
+        <div class="page active" id="page-language">
+            <button class="back-btn">&larr;</button>
+
+            <div class="header-row">
+                <div class="icon-badge">&#127760;</div>
+                <h1 data-i18n="chooseLanguage">Choose Language</h1>
+            </div>
+            <p class="subtitle" data-i18n="selectPreferred">Select your preferred language.</p>
+
+            <div class="options" id="language-options">
+                <div class="option selected" data-lang="en">
+                    <span>English</span>
+                    <span class="radio">&#10003;</span>
+                </div>
+                <div class="option" data-lang="yo">
+                    <span>Yoruba</span>
+                    <span class="radio"></span>
+                </div>
+                <div class="option" data-lang="ha">
+                    <span>Hausa</span>
+                    <span class="radio"></span>
+                </div>
+                <div class="option" data-lang="ig">
+                    <span>Igbo</span>
+                    <span class="radio"></span>
+                </div>
+                <div class="option" data-lang="fr">
+                    <span>Fran&ccedil;ais</span>
+                    <span class="radio"></span>
+                </div>
+            </div>
+
+            <div class="spacer"></div>
+
+            <button class="continue-btn" id="continue-btn" data-i18n="continueBtn">Continue</button>
+        </div>
+
+        <!-- PAGE 2: The linked page, fully translated too -->
+        <div class="page" id="page-welcome">
+            <button class="back-btn" id="back-to-lang">&larr;</button>
+
+            <div class="welcome-icon">&#128075;</div>
+            <h1 data-i18n="welcomeTitle">Welcome!</h1>
+            <p class="subtitle" data-i18n="welcomeSubtitle">
+                Your app is now set up in the language you selected.
+            </p>
+
+            <div class="card">
+                <h3 data-i18n="cardTitle1">Everything, translated</h3>
+                <p data-i18n="cardBody1">All text on this page and the next automatically switches to match your choice.</p>
+            </div>
+
+            <div class="card">
+                <h3 data-i18n="cardTitle2">Change anytime</h3>
+                <p data-i18n="cardBody2">Go back to update your language preference whenever you like.</p>
+            </div>
+
+            <!--    delete this later -->
+
+            <div class="spacer1">elucidate the code below
+                <a href="assistant.html">click here</a>
+            </div>
+            <div class="spacer"></div>
+
+            <span class="lang-tag" id="current-lang-tag">English</span>
+        </div>
+
+    </div>
+
+    <script>
+        /* ---------------------------------------------------------
+                                                                                                   TRANSLATIONS
+                                                                                                   Add/edit keys here. Every element with data-i18n="key"
+                                                                                                   gets its text replaced automatically by applyTranslations().
+                                                                                                ---------------------------------------------------------- */
+        const translations = {
+            en: {
+                chooseLanguage: "Choose Language",
+                selectPreferred: "Select your preferred language.",
+                continueBtn: "Continue",
+                welcomeTitle: "Welcome!",
+                welcomeSubtitle: "Your app is now set up in the language you selected.",
+                cardTitle1: "Everything, translated",
+                cardBody1: "All text on this page and the next automatically switches to match your choice.",
+                cardTitle2: "Change anytime",
+                cardBody2: "Go back to update your language preference whenever you like.",
+                langName: "English"
+            },
+            yo: {
+                chooseLanguage: "Yan Èdè",
+                selectPreferred: "Yan èdè tí o fẹ́ràn.",
+                continueBtn: "Tẹ̀síwájú",
+                welcomeTitle: "Ẹ ku abọ̀!",
+                welcomeSubtitle: "A ti ṣètò app rẹ ní èdè tí o yàn.",
+                cardTitle1: "Ohun gbogbo, ní ìtumọ̀",
+                cardBody1: "Gbogbo ọ̀rọ̀ tó wà ní ojú-ìwé yìí àti èyí tó tẹ̀lé yóò yí padà láifọwọ́kansí sí èdè tí o yàn.",
+                cardTitle2: "Yí padà nígbàkúgbà",
+                cardBody2: "Padà sẹ́yìn láti yí èdè tí o fẹ́ràn padà nígbàkúgbà.",
+                langName: "Yoruba"
+            },
+            ha: {
+                chooseLanguage: "Zaɓi Harshe",
+                selectPreferred: "Zaɓi harshen da kake so.",
+                continueBtn: "Ci gaba",
+                welcomeTitle: "Barka da zuwa!",
+                welcomeSubtitle: "Yanzu an saita app ɗinka a harshen da ka zaɓa.",
+                cardTitle1: "Komai, an fassara",
+                cardBody1: "Duk rubutun a wannan shafin da na gaba zai canza kai tsaye don dacewa da zaɓinka.",
+                cardTitle2: "Canza kowane lokaci",
+                cardBody2: "Koma baya don sabunta zaɓin harshenka duk lokacin da kake so.",
+                langName: "Hausa"
+            },
+            ig: {
+                chooseLanguage: "Họrọ Asụsụ",
+                selectPreferred: "Họrọ asụsụ ị chọrọ.",
+                continueBtn: "Gaa n'ihu",
+                welcomeTitle: "Nnọọ!",
+                welcomeSubtitle: "Emesila edozi appụ gị n'asụsụ ị họrọrọ.",
+                cardTitle1: "Ihe niile, atụgharịrị",
+                cardBody1: "Ederede niile dị na peeji a na nke ọzọ ga-agbanwe ozugbo iji dabara na nhọrọ gị.",
+                cardTitle2: "Gbanwee mgbe ọ bụla",
+                cardBody2: "Laghachi azụ ka ị melite mmasị asụsụ gị mgbe ọ bụla ị chọrọ.",
+                langName: "Igbo"
+            },
+            fr: {
+                chooseLanguage: "Choisir la langue",
+                selectPreferred: "Sélectionnez votre langue préférée.",
+                continueBtn: "Continuer",
+                welcomeTitle: "Bienvenue !",
+                welcomeSubtitle: "Votre application est maintenant configurée dans la langue que vous avez choisie.",
+                cardTitle1: "Tout, traduit",
+                cardBody1: "Tout le texte de cette page et de la suivante s'adapte automatiquement à votre choix.",
+                cardTitle2: "Modifiable à tout moment",
+                cardBody2: "Revenez en arrière pour mettre à jour votre langue préférée quand vous le souhaitez.",
+                langName: "Français"
+            }
+        };
+
+        let selectedLang = "en";
+
+        function applyTranslations(lang) {
+            const dict = translations[lang] || translations.en;
+            document.querySelectorAll("[data-i18n]").forEach(el => {
+                const key = el.getAttribute("data-i18n");
+                if (dict[key]) el.textContent = dict[key];
+            });
+            document.getElementById("current-lang-tag").textContent = dict.langName;
+            document.documentElement.lang = lang;
+        }
+
+        // Handle language option selection
+        document.querySelectorAll(".option").forEach(opt => {
+            opt.addEventListener("click", () => {
+                document.querySelectorAll(".option").forEach(o => {
+                    o.classList.remove("selected");
+                    o.querySelector(".radio").innerHTML = "";
+                });
+                opt.classList.add("selected");
+                opt.querySelector(".radio").innerHTML = "&#10003;";
+                selectedLang = opt.getAttribute("data-lang");
+                applyTranslations(selectedLang);
+                updateAssistantLink();
+            });
+        });
+
+        // Continue -> open page.html with selected language
+        document.getElementById("continue-btn").addEventListener("click", () => {
+            if (!selectedLang) selectedLang = 'en';
+            localStorage.setItem('preferredLang', selectedLang);
+            window.location.href = `page.html?lang=${selectedLang}`;
+        });
+
+        // Keep the manual link in sync if the user chooses it
+        function updateAssistantLink() {
+            const link = document.querySelector(".spacer1 a");
+            if (link) link.href = `page.html?lang=${selectedLang}`;
+        }
+
+        // Back button on welcome page returns to language selector
+        document.getElementById("back-to-lang").addEventListener("click", () => {
+            document.getElementById("page-welcome").classList.remove("active");
+            document.getElementById("page-language").classList.add("active");
+        });
+
+        // Initial paint
+        applyTranslations(selectedLang);
+        updateAssistantLink();
+    </script>
+
+</body>
+
+</html>

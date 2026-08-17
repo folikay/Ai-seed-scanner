@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SeedScan AI - Onboarding</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #eef1f0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+        
+        .phone {
+            position: relative;
+            width: 375px;
+            height: 812px;
+            background: #ffffff;
+            border-radius: 48px;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.18), 0 0 0 10px #111;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        /* Hero image area — centered, no status bar above it */
+        
+        .hero {
+            position: relative;
+            margin: 64px auto 0;
+            width: 100%;
+            height: 340px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .checker-mask {
+            position: absolute;
+            width: 340px;
+            height: 300px;
+            border-radius: 50%;
+            background-image: linear-gradient(45deg, #e3e6e2 25%, transparent 25%), linear-gradient(-45deg, #e3e6e2 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #e3e6e2 75%), linear-gradient(-45deg, transparent 75%, #e3e6e2 75%);
+            background-size: 16px 16px;
+            background-position: 0 0, 0 8px, 8px -8px, -8px 0px;
+            opacity: 0.9;
+            -webkit-mask-image: radial-gradient(ellipse at center, black 55%, transparent 78%);
+            mask-image: radial-gradient(ellipse at center, black 55%, transparent 78%);
+        }
+        
+        .scan-line {
+            position: absolute;
+            top: 50%;
+            left: 8%;
+            right: 8%;
+            height: 6px;
+            transform: translateY(-50%);
+            background: linear-gradient(90deg, transparent, #3ee089 15%, #7dffb8 50%, #3ee089 85%, transparent);
+            border-radius: 3px;
+            box-shadow: 0 0 20px 4px rgba(62, 224, 137, 0.65), 0 0 40px 10px rgba(62, 224, 137, 0.3);
+            z-index: 2;
+            animation: pulse 2.4s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%,
+            100% {
+                opacity: 0.85;
+            }
+            50% {
+                opacity: 1;
+            }
+        }
+        
+        .grains {
+            position: relative;
+            z-index: 3;
+        }
+        /* Text content */
+        
+        .content {
+            padding: 36px 32px 0;
+            text-align: center;
+        }
+        
+        .title {
+            font-size: 26px;
+            font-weight: 800;
+            color: #14231c;
+            letter-spacing: -0.3px;
+        }
+        
+        .subtitle {
+            margin-top: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            color: #1fa15a;
+        }
+        
+        .features {
+            margin-top: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 22px;
+            text-align: left;
+        }
+        
+        .feature {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+        
+        .feature-icon {
+            flex-shrink: 0;
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: #e7f7ee;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .feature-icon svg {
+            width: 19px;
+            height: 19px;
+        }
+        
+        .feature-text {
+            font-size: 15.5px;
+            font-weight: 500;
+            color: #26332c;
+            line-height: 1.35;
+        }
+        
+        .spacer {
+            flex: 1;
+        }
+        
+        .cta-wrap {
+            padding: 24px 24px 14px;
+        }
+        
+        .cta {
+            width: 100%;
+            border: none;
+            background: linear-gradient(180deg, #22c55e, #16a34a);
+            color: #fff;
+            font-size: 17px;
+            font-weight: 700;
+            padding: 17px 0;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            cursor: pointer;
+            box-shadow: 0 10px 20px rgba(34, 197, 94, 0.35);
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+        
+        .cta:active {
+            transform: scale(0.97);
+            box-shadow: 0 6px 12px rgba(34, 197, 94, 0.3);
+        }
+        
+        .home-indicator {
+            width: 134px;
+            height: 5px;
+            background: #d8dcd9;
+            border-radius: 3px;
+            margin: 0 auto 8px;
+        }
+        /* Language overlay */
+        
+        .lang-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.45);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 60;
+        }
+        
+        .lang-card {
+            width: 320px;
+            background: #fff;
+            border-radius: 18px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+            text-align: center;
+        }
+        
+        .lang-list {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin: 14px 0 18px;
+        }
+        
+        .lang-btn {
+            padding: 8px 12px;
+            border-radius: 10px;
+            border: 1px solid #e6e6e6;
+            background: #f7f7f7;
+            cursor: pointer;
+            font-weight: 700;
+        }
+        
+        .lang-btn.active {
+            background: #1FA45C;
+            color: #fff;
+            border-color: #15904d;
+        }
+        
+        .lang-controls {
+            display: flex;
+            gap: 10px;
+            justify-content: center
+        }
+        /* scanning highlight that will animate over the embedded seed image */
+        
+        .image-scan {
+            mix-blend-mode: screen;
+            opacity: 0.9;
+            will-change: transform;
+        }
+        
+        @keyframes imageSweep {
+            0% {
+                transform: translateX(-140%);
+            }
+            100% {
+                transform: translateX(140%);
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="phone">
+
+        <div class="hero">
+            <div class="checker-mask"></div>
+            <div class="scan-line"></div>
+
+            <svg class="grains" width="340" height="300" viewBox="0 0 340 300">
+      <defs>
+        <radialGradient id="cornBody" cx="35%" cy="30%" r="80%">
+          <stop offset="0%" stop-color="#ffd980"/>
+          <stop offset="55%" stop-color="#f5b93c"/>
+          <stop offset="100%" stop-color="#d98f16"/>
+        </radialGradient>
+        <radialGradient id="cornBody2" cx="35%" cy="30%" r="80%">
+          <stop offset="0%" stop-color="#ffe49a"/>
+          <stop offset="55%" stop-color="#f7c454"/>
+          <stop offset="100%" stop-color="#e0961c"/>
+        </radialGradient>
+        <linearGradient id="riceBody" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#fbf3dd"/>
+          <stop offset="100%" stop-color="#e9d7a8"/>
+        </linearGradient>
+        <radialGradient id="cowpeaBody" cx="35%" cy="30%" r="80%">
+          <stop offset="0%" stop-color="#fffdf6"/>
+          <stop offset="60%" stop-color="#f7f0dc"/>
+          <stop offset="100%" stop-color="#e3d6b5"/>
+        </radialGradient>
+      </defs>
+
+            <!-- Replace SVG kernels with real seed image while keeping existing visual effects -->
+            <!-- Image fills the same SVG viewport so checker-mask, scan-line and leaf accents remain -->
+            <image href="seed.webp" x="0" y="0" width="340" height="300" preserveAspectRatio="xMidYMid slice" />
+
+            <!-- scanning overlay: a narrow gradient rect that sweeps across the image -->
+            <defs>
+                <linearGradient id="scanGradient" x1="0%" x2="100%" y1="0%" y2="0%">
+                    <stop offset="0%" stop-color="rgba(255,255,255,0)" />
+                    <stop offset="40%" stop-color="rgba(255,255,255,0.45)" />
+                    <stop offset="50%" stop-color="rgba(255,255,255,0.75)" />
+                    <stop offset="60%" stop-color="rgba(255,255,255,0.45)" />
+                    <stop offset="100%" stop-color="rgba(255,255,255,0)" />
+                </linearGradient>
+            </defs>
+
+            <rect class="image-scan" x="0" y="0" width="80" height="300" fill="url(#scanGradient)" style="animation:imageSweep 2.2s linear infinite;" />
+
+        </svg>
+        </div>
+
+        <!-- Language selection overlay (appears on first run or when changing language) -->
+        <div class="lang-overlay" id="langOverlay" aria-hidden="true">
+            <div class="lang-card">
+                <div style="font-weight:800;font-size:18px">Choose your language</div>
+                <div style="margin-top:8px;color:#556b61">Select a preferred language to continue</div>
+                <div class="lang-list" id="langList">
+                    <button class="lang-btn" data-lang="en">English</button>
+                    <button class="lang-btn" data-lang="yo">Yorùbá</button>
+                    <button class="lang-btn" data-lang="ha">Hausa</button>
+                    <button class="lang-btn" data-lang="ig">Igbo</button>
+                    <button class="lang-btn" data-lang="fr">Français</button>
+                </div>
+                <div class="lang-controls">
+                    <button id="langContinue" class="cta" style="width:auto;padding:10px 18px;border-radius:12px;box-shadow:none">Continue</button>
+                    <button id="langSkip" class="lang-btn" style="background:#fff">Skip</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- small language switcher -->
+        <div style="position:absolute;top:12px;right:14px;z-index:70">
+            <button id="changeLangBtn" class="lang-btn">Language</button>
+        </div>
+
+        <div class="content">
+            <div class="title">Welcome to SeedScan AI</div>
+            <div class="subtitle">Scan. Analyze. Grow Better.</div>
+
+            <div class="features">
+                <div class="feature">
+                    <div class="feature-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="#1fa15a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+          </svg>
+                    </div>
+                    <div class="feature-text">Real-time seed viability detection</div>
+                </div>
+
+                <div class="feature">
+                    <div class="feature-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="#1fa15a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96.44 2.5 2.5 0 0 1-2.96-3.08 3 3 0 0 1-.34-5.58 2.5 2.5 0 0 1 1.32-4.24 2.5 2.5 0 0 1 1.98-3A2.5 2.5 0 0 1 9.5 2Z"/>
+            <path d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.96.44 2.5 2.5 0 0 0 2.96-3.08 3 3 0 0 0 .34-5.58 2.5 2.5 0 0 0-1.32-4.24 2.5 2.5 0 0 0-1.98-3A2.5 2.5 0 0 0 14.5 2Z"/>
+          </svg>
+                    </div>
+                    <div class="feature-text">AI-powered farming guidance</div>
+                </div>
+
+                <div class="feature">
+                    <div class="feature-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="#1fa15a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/>
+            <polyline points="17 6 23 6 23 12"/>
+          </svg>
+                    </div>
+                    <div class="feature-text">Better planting decisions and higher yields</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="spacer"></div>
+
+        <div class="cta-wrap">
+            <button id="getStartedBtn" class="cta">
+            <span id="ctaLabel">Get Started</span>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="9 18 15 12 9 6"/>
+            </svg>
+        </button>
+        </div>
+
+        <div class="home-indicator"></div>
+    </div>
+</body>
+
+<script>
+    (function() {
+        const SUPPORTED = ['en', 'yo', 'ha', 'ig', 'fr'];
+        const strings = {
+            en: {
+                title: 'Welcome to SeedScan AI',
+                subtitle: 'Scan. Analyze. Grow Better.',
+                cta: 'Get Started',
+                features: [
+                    'Real-time seed viability detection',
+                    'AI-powered farming guidance',
+                    'Better planting decisions and higher yields'
+                ]
+            },
+            fr: {
+                title: 'Bienvenue à SeedScan AI',
+                subtitle: 'Scannez. Analysez. Cultivez mieux.',
+                cta: 'Commencer',
+                features: [
+                    'Détection de viabilité des semences en temps réel',
+                    "Guidance agricole assistée par IA",
+                    "Meilleures décisions de semis et rendements plus élevés"
+                ]
+            },
+            yo: {
+                title: 'Kaabọ si SeedScan AI',
+                subtitle: 'Ṣayẹwo. Ṣe atupale. Dagba Dara.',
+                cta: 'Bẹrẹ',
+                features: [
+                    'Ìmúlò àyẹ̀wò ìtóbi irugbin nígbàkan',
+                    'Ìtọnisọna ọgbin pẹ̀lú AI',
+                    'Ìpinnu ìgbìn tí ó dára ju àti ìríre gíga'
+                ]
+            },
+            ha: {
+                title: 'Barka da zuwa SeedScan AI',
+                subtitle: 'Duba. Bincika. Yi girma mafi kyau.',
+                cta: 'Fara',
+                features: [
+                    'Gano ingancin iri a lokaci-lokaci',
+                    'Jagoranci noma tare da AI',
+                    'Mafi kyawun yanke shawara na shuka da ƙarin amfanin gona'
+                ]
+            },
+            ig: {
+                title: 'Nnọọ na SeedScan AI',
+                subtitle: 'Sken. Nyocha. Too nke ọma.',
+                cta: 'Malite',
+                features: [
+                    'Nlele ndụ mkpụrụ n’oge eme',
+                    'Nduzi ugbo nwere AI',
+                    'Mkpebi ka mma maka ịkụ na mmụba mmiri'
+                ]
+            }
+        };
+
+        const titleEl = document.querySelector('.title');
+        const subtitleEl = document.querySelector('.subtitle');
+        const featureEls = Array.from(document.querySelectorAll('.feature-text'));
+        const ctaLabel = document.getElementById('ctaLabel');
+
+        const langOverlay = document.getElementById('langOverlay');
+        const langList = document.getElementById('langList');
+        const langContinue = document.getElementById('langContinue');
+        const langSkip = document.getElementById('langSkip');
+        const changeLangBtn = document.getElementById('changeLangBtn');
+        const getStartedBtn = document.getElementById('getStartedBtn');
+
+        let selectedLang = null;
+
+        function applyTranslations(lang) {
+            if (!SUPPORTED.includes(lang)) lang = 'en';
+            selectedLang = lang;
+            const s = strings[lang] || strings.en;
+            titleEl.textContent = s.title;
+            subtitleEl.textContent = s.subtitle;
+            ctaLabel.textContent = s.cta;
+            if (s.features && featureEls.length) {
+                featureEls.forEach((el, i) => {
+                    if (s.features[i]) el.textContent = s.features[i];
+                });
+            }
+        }
+
+        // highlight active language button
+        function setActiveLangButton(lang) {
+            Array.from(langList.querySelectorAll('.lang-btn')).forEach(b => {
+                b.classList.toggle('active', b.dataset.lang === lang);
+            });
+        }
+
+        // handle language button clicks
+        langList.addEventListener('click', (ev) => {
+            const btn = ev.target.closest('.lang-btn');
+            if (!btn) return;
+            const lang = btn.dataset.lang;
+            selectedLang = lang;
+            setActiveLangButton(lang);
+        });
+
+        langContinue.addEventListener('click', () => {
+            if (!selectedLang) selectedLang = localStorage.getItem('preferredLang') || 'en';
+            localStorage.setItem('preferredLang', selectedLang);
+            applyTranslations(selectedLang);
+            langOverlay.style.display = 'none';
+            langOverlay.setAttribute('aria-hidden', 'true');
+        });
+
+        langSkip.addEventListener('click', () => {
+            langOverlay.style.display = 'none';
+            langOverlay.setAttribute('aria-hidden', 'true');
+        });
+
+        changeLangBtn.addEventListener('click', () => {
+            // open overlay to change
+            langOverlay.style.display = 'flex';
+            langOverlay.setAttribute('aria-hidden', 'false');
+            const pref = localStorage.getItem('preferredLang') || 'en';
+            setActiveLangButton(pref);
+        });
+
+        getStartedBtn.addEventListener('click', () => {
+            const lang = selectedLang || localStorage.getItem('preferredLang') || 'en';
+            // navigate to assistant and pass lang as query param
+            window.location.href = `assistant.html?lang=${encodeURIComponent(lang)}`;
+        });
+
+        // initialize on load: use URL param > localStorage > show overlay
+        function init() {
+            const params = new URLSearchParams(window.location.search);
+            const urlLang = params.get('lang');
+            const pref = localStorage.getItem('preferredLang');
+            if (urlLang && SUPPORTED.includes(urlLang)) {
+                applyTranslations(urlLang);
+                selectedLang = urlLang;
+            } else if (pref && SUPPORTED.includes(pref)) {
+                applyTranslations(pref);
+                selectedLang = pref;
+            } else {
+                // show overlay to pick language
+                langOverlay.style.display = 'flex';
+                langOverlay.setAttribute('aria-hidden', 'false');
+            }
+            setActiveLangButton(selectedLang || 'en');
+        }
+
+        init();
+    })();
+</script>
+
+</body>
+
+</html>
