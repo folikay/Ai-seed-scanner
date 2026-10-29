@@ -1,0 +1,939 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Grain Scanner – Maize, Rice, Cowpea</title>
+    <style>
+         :root {
+            --bg: #f5f6f2;
+            --card: #fff;
+            --ink: #1d2a1f;
+            --mut: #667;
+            --ok: #16a34a;
+            --bad: #dc2626;
+            --line: #d9ddd3
+        }
+        
+        @media (prefers-color-scheme:dark) {
+             :root {
+                --bg: #141a15;
+                --card: #1d261f;
+                --ink: #e8efe9;
+                --mut: #9aa89c;
+                --line: #2d392f
+            }
+        }
+        
+        * {
+            box-sizing: border-box
+        }
+        
+        body {
+            margin: 0;
+            font-family: system-ui, Arial, sans-serif;
+            background: var(--bg);
+            color: var(--ink);
+            padding: 16px
+        }
+        
+        .wrap {
+            max-width: 720px;
+            margin: auto
+        }
+        
+        .scanner-heading {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 4px;
+        }
+        
+        .back-link {
+            display: inline-grid;
+            width: 36px;
+            height: 36px;
+            flex: 0 0 36px;
+            place-items: center;
+            border: 1px solid var(--line);
+            border-radius: 50%;
+            background: var(--card);
+            color: var(--ink);
+            text-decoration: none;
+            font-size: 1.2rem;
+            line-height: 1;
+        }
+        
+        .back-link:hover {
+            background: #ecfdf3;
+            border-color: var(--ok);
+        }
+        
+        h1 {
+            font-size: 1.3rem;
+            margin: 0 0 4px
+        }
+        
+        .scan-font {
+            color: transparent;
+            background: linear-gradient(110deg, var(--ink) 0%, var(--ink) 38%, #16a34a 48%, #b7f7c8 52%, var(--ink) 62%, var(--ink) 100%);
+            background-size: 250% 100%;
+            background-position: 100% 0;
+            background-clip: text;
+            -webkit-background-clip: text;
+            animation: fontScan 3s ease-in-out infinite;
+        }
+        
+        @keyframes fontScan {
+            0%,
+            15% {
+                background-position: 100% 0
+            }
+            85%,
+            100% {
+                background-position: 0 0
+            }
+        }
+        
+        @media (prefers-reduced-motion:reduce) {
+            .scan-font {
+                animation: none
+            }
+        }
+        
+        p.sub {
+            margin: 0 0 14px;
+            color: var(--mut);
+            font-size: .9rem
+        }
+        
+        .card {
+            background: var(--card);
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            padding: 12px;
+            margin-bottom: 12px
+        }
+        
+        #stage {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 4/3;
+            background: #000;
+            border-radius: 8px;
+            overflow: hidden
+        }
+        
+        #stage video,
+        #stage img {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: fill
+        }
+        
+        #overlay {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%
+        }
+        /* ===== scan effect (4 corners + moving line) ===== */
+        
+        #scanfx {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            opacity: 1;
+            transition: opacity .3s ease, visibility .3s
+        }
+        
+        #scanfx.off {
+            opacity: 0;
+            visibility: hidden
+        }
+        
+        #scanfx .corner {
+            position: absolute;
+            width: 42px;
+            height: 42px;
+            border: 0 solid #22c55e;
+            filter: drop-shadow(0 0 6px rgba(34, 197, 94, .9))
+        }
+        
+        #scanfx .tl {
+            top: 12px;
+            left: 12px;
+            border-top-width: 4px;
+            border-left-width: 4px;
+            border-top-left-radius: 10px
+        }
+        
+        #scanfx .tr {
+            top: 12px;
+            right: 12px;
+            border-top-width: 4px;
+            border-right-width: 4px;
+            border-top-right-radius: 10px
+        }
+        
+        #scanfx .bl {
+            bottom: 12px;
+            left: 12px;
+            border-bottom-width: 4px;
+            border-left-width: 4px;
+            border-bottom-left-radius: 10px
+        }
+        
+        #scanfx .br {
+            bottom: 12px;
+            right: 12px;
+            border-bottom-width: 4px;
+            border-right-width: 4px;
+            border-bottom-right-radius: 10px
+        }
+        
+        #scanfx .line {
+            position: absolute;
+            left: 14px;
+            right: 14px;
+            top: 14px;
+            height: 3px;
+            border-radius: 2px;
+            background: linear-gradient(90deg, transparent, #4ade80 20%, #b7f7c8 50%, #4ade80 80%, transparent);
+            box-shadow: 0 0 14px 4px rgba(74, 222, 128, .65);
+            animation: sweep 2.2s ease-in-out infinite alternate;
+        }
+        
+        @keyframes sweep {
+            from {
+                top: 14px
+            }
+            to {
+                top: calc(100% - 17px)
+            }
+        }
+        
+        @media (prefers-reduced-motion:reduce) {
+            #scanfx .line {
+                animation: none;
+                top: 50%
+            }
+        }
+        
+        .btns {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+            align-items: center
+        }
+        /* ===== UPDATED: assistant button (right aligned, running light, pop message) ===== */
+        
+        .assistant-link {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            margin-left: auto;
+            /* pushes the button to the far right */
+            height: 46px;
+            padding: 0 6px;
+            border-radius: 999px;
+            overflow: hidden;
+            text-decoration: none;
+            color: #fff;
+            font-size: .9rem;
+            font-weight: 700;
+            white-space: nowrap;
+            background: #064e1f;
+            box-shadow: 0 0 14px 2px rgba(34, 255, 110, .55);
+        }
+        /* running light: a bright comet spinning behind the ring */
+        
+        .assistant-link::before {
+            content: "";
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            width: 520px;
+            height: 520px;
+            margin: -260px 0 0 -260px;
+            background: conic-gradient(from 0deg, #064e1f 0deg, #064e1f 240deg, #22ff6e 320deg, #ffffff 360deg);
+            animation: spinRing 1.4s linear infinite;
+            z-index: 0;
+        }
+        /* dark inner body of the button (leaves a 3px ring visible) */
+        
+        .assistant-link::after {
+            content: "";
+            position: absolute;
+            inset: 3px;
+            border-radius: 999px;
+            background: #052e16;
+            z-index: 1
+        }
+        
+        @keyframes spinRing {
+            to {
+                transform: rotate(360deg)
+            }
+        }
+        
+        .assistant-symbol {
+            position: relative;
+            z-index: 2;
+            display: grid;
+            place-items: center;
+            width: 34px;
+            height: 34px;
+            flex: 0 0 34px;
+            border-radius: 50%;
+            background: #22ff6e;
+            color: #052e16;
+            font-weight: 800;
+            font-size: 1rem;
+        }
+        
+        .assistant-message {
+            position: relative;
+            z-index: 2;
+            max-width: 0;
+            opacity: 0;
+            overflow: hidden;
+            margin: 0;
+            transition: max-width .4s ease, opacity .3s ease, margin .4s ease;
+        }
+        
+        .assistant-link.expanded .assistant-message {
+            max-width: 240px;
+            opacity: 1;
+            margin: 0 10px 0 12px
+        }
+        /* pop out effect when the message opens */
+        
+        .assistant-link.pop {
+            animation: popOut .5s ease
+        }
+        
+        @keyframes popOut {
+            0% {
+                transform: scale(.8)
+            }
+            60% {
+                transform: scale(1.1)
+            }
+            100% {
+                transform: scale(1)
+            }
+        }
+        /* results showing: stop the running light and BLINK */
+        
+        .assistant-link.has-results::before {
+            animation: none;
+            background: #22ff6e
+        }
+        
+        .assistant-link.has-results {
+            animation: blinkBtn .7s ease-in-out infinite alternate
+        }
+        
+        @keyframes blinkBtn {
+            from {
+                opacity: 1;
+                box-shadow: 0 0 0 3px rgba(34, 255, 110, .6), 0 0 28px 8px rgba(34, 255, 110, .95)
+            }
+            to {
+                opacity: .35;
+                box-shadow: 0 0 0 0 rgba(34, 255, 110, 0), 0 0 6px 1px rgba(34, 255, 110, .3)
+            }
+        }
+        
+        @media (prefers-reduced-motion:reduce) {
+            .assistant-link::before,
+            .assistant-link.pop,
+            .assistant-link.has-results {
+                animation: none
+            }
+            .assistant-link::before {
+                background: #22ff6e
+            }
+        }
+        /* ===== end assistant button ===== */
+        
+        button,
+        label.btn {
+            background: var(--ok);
+            color: #fff;
+            border: 0;
+            border-radius: 8px;
+            padding: 10px 14px;
+            font-size: .95rem;
+            cursor: pointer
+        }
+        
+        button.alt,
+        label.btn {
+            background: #3b4a3e
+        }
+        
+        label.live {
+            font-size: .9rem;
+            color: var(--mut)
+        }
+        
+        #msg {
+            display: none;
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: 600;
+            margin-bottom: 12px
+        }
+        
+        #msg.err {
+            display: block;
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fca5a5
+        }
+        
+        #msg.okm {
+            display: block;
+            background: #dcfce7;
+            color: #166534;
+            border: 1px solid #86efac
+        }
+        
+        .dot {
+            display: inline-block;
+            width: 11px;
+            height: 11px;
+            border-radius: 50%;
+            margin-right: 5px;
+            vertical-align: middle
+        }
+        
+        .g {
+            background: var(--ok)
+        }
+        
+        .r {
+            background: var(--bad)
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: .9rem
+        }
+        
+        td,
+        th {
+            padding: 6px;
+            border-bottom: 1px solid var(--line);
+            text-align: left
+        }
+    </style>
+</head>
+
+<body>
+    <div class="wrap">
+        <div class="scanner-heading">
+            <a class="back-link" href="page.html" aria-label="Back to page">←</a>
+            <h1 id="scannerTitle" class="scan-font">🌾 Grain Scanner</h1>
+        </div>
+        <p class="sub">Scans <b>maize, rice, cowpea</b> only · 1–15 grains · no overlap · use a plain white background.</p>
+
+        <div id="msg"></div>
+
+        <div class="card">
+            <div id="stage">
+                <video id="video" playsinline muted></video>
+                <img id="photo" alt="" style="display:none">
+                <canvas id="overlay"></canvas>
+                <div id="scanfx">
+                    <span class="corner tl"></span><span class="corner tr"></span>
+                    <span class="corner bl"></span><span class="corner br"></span>
+                    <div class="line"></div>
+                </div>
+            </div>
+            <div class="btns">
+                <button id="camBtn">Start camera</button>
+                <button id="scanBtn">Scan</button>
+                <label class="btn">Upload photo<input id="file" type="file" accept="image/*" hidden></label>
+                <label class="live"><input id="live" type="checkbox"> Live scan</label>
+
+                <!-- UPDATED: assistant button (last item, right aligned) -->
+                <a id="assistantLink" class="assistant-link expanded" href="assistant.html" aria-label="Click here for assistant">
+                    <span class="assistant-message">Click here for assistant</span>
+                    <span class="assistant-symbol" aria-hidden="true">A</span>
+                </a>
+            </div>
+        </div>
+
+        <div class="card" id="results" style="display:none">
+            <div><span class="dot g"></span>Good: <b id="nGood">0</b> &nbsp; <span class="dot r"></span>Bad: <b id="nBad">0</b></div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Crop</th>
+                        <th>Status</th>
+                        <th>Reason</th>
+                    </tr>
+                </thead>
+                <tbody id="rows"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        const $ = id => document.getElementById(id);
+        const video = $('video'),
+            photo = $('photo'),
+            overlay = $('overlay'),
+            stage = $('stage');
+        let source = null,
+            stream = null,
+            liveTimer = null;
+
+        /* ===== UPDATED: assistant message cycle =====
+           open 30s -> circle with "A" for 2 min -> pops open again 30s -> repeat.
+           The running light circle never stops (only the result blink replaces it). */
+        const assistantLink = $('assistantLink');
+
+        function setAssistantOpen(open) {
+            assistantLink.classList.toggle('expanded', open);
+            if (open) { // pop out effect
+                assistantLink.classList.remove('pop');
+                void assistantLink.offsetWidth; // restart animation
+                assistantLink.classList.add('pop');
+            }
+        }
+
+        function cycleAssistant() {
+            setAssistantOpen(true);
+            setTimeout(() => {
+                setAssistantOpen(false);
+                setTimeout(cycleAssistant, 120000); // 2 minutes later: pop out again
+            }, 30000); // stays open for 30 seconds
+        }
+        cycleAssistant();
+
+        function setFx(on) {
+            $('scanfx').classList.toggle('off', !on);
+        }
+
+        /* ---------- camera / upload ---------- */
+        $('camBtn').onclick = async() => {
+            try {
+                stream = await navigator.mediaDevices.getUserMedia({
+                    video: {
+                        facingMode: 'environment'
+                    }
+                });
+                video.srcObject = stream;
+                await video.play();
+                photo.style.display = 'none';
+                video.style.display = 'block';
+                source = video;
+                stage.style.aspectRatio = video.videoWidth + '/' + video.videoHeight;
+                showMsg('', '');
+                setFx(true);
+            } catch (e) {
+                showMsg('err', 'Camera error: allow camera access (needs https or localhost), or use Upload photo.');
+            }
+        };
+
+        $('file').onchange = e => {
+            const f = e.target.files[0];
+            if (!f) return;
+            const imageUrl = URL.createObjectURL(f);
+            photo.onload = () => {
+                video.style.display = 'none';
+                photo.style.display = 'none';
+                source = photo;
+                if (scan()) {
+                    photo.style.display = 'block';
+                    stage.style.aspectRatio = photo.naturalWidth + '/' + photo.naturalHeight;
+                    setFx(false);
+                } else {
+                    source = null;
+                    photo.removeAttribute('src');
+                    setFx(true);
+                }
+                $('file').value = '';
+                URL.revokeObjectURL(imageUrl);
+            };
+            photo.onerror = () => {
+                source = null;
+                photo.style.display = 'none';
+                URL.revokeObjectURL(imageUrl);
+                fail('Could not load this image. Please choose another file.');
+                $('file').value = '';
+            };
+            photo.src = imageUrl;
+        };
+
+        $('scanBtn').addEventListener('click', () => {
+            $('scannerTitle').classList.remove('scan-font');
+        }, {
+            once: true
+        });
+
+        // UPDATED: clicking Scan hides the effect and puts the assistant button back to running light
+        $('scanBtn').onclick = () => {
+            setFx(false);
+            assistantLink.classList.remove('has-results');
+            scan();
+        };
+
+        $('live').onchange = e => {
+            clearInterval(liveTimer);
+            if (e.target.checked) {
+                setFx(false);
+                liveTimer = setInterval(scan, 900);
+            } else setFx(true);
+        };
+
+        function showMsg(type, text) {
+            const m = $('msg');
+            m.className = type;
+            m.textContent = text;
+        }
+
+        function fail(text) {
+            overlay.getContext('2d').clearRect(0, 0, overlay.width, overlay.height);
+            $('results').style.display = 'none';
+            assistantLink.classList.remove('has-results'); // no result -> running light returns
+            showMsg('err', '⚠ ' + text);
+            if (!$('live').checked) {
+                setFx(true);
+                alert(text);
+            }
+            return false;
+        }
+
+        /* ---------- helpers ---------- */
+        function rgb2hsv(r, g, b) {
+            r /= 255;
+            g /= 255;
+            b /= 255;
+            const mx = Math.max(r, g, b),
+                mn = Math.min(r, g, b),
+                d = mx - mn;
+            let h = 0;
+            if (d) {
+                if (mx === r) h = ((g - b) / d) % 6;
+                else if (mx === g) h = (b - r) / d + 2;
+                else h = (r - g) / d + 4;
+                h *= 60;
+                if (h < 0) h += 360;
+            }
+            return [h, mx ? d / mx : 0, mx];
+        }
+
+        function otsu(hist, total) {
+            let sum = 0;
+            for (let i = 0; i < 256; i++) sum += i * hist[i];
+            let sB = 0,
+                wB = 0,
+                best = 0,
+                th = 0;
+            for (let i = 0; i < 256; i++) {
+                wB += hist[i];
+                if (!wB) continue;
+                const wF = total - wB;
+                if (!wF) break;
+                sB += i * hist[i];
+                const mB = sB / wB,
+                    mF = (sum - sB) / wF,
+                    v = wB * wF * (mB - mF) * (mB - mF);
+                if (v > best) {
+                    best = v;
+                    th = i;
+                }
+            }
+            return th;
+        }
+        const median = a => {
+            const s = [...a].sort((x, y) => x - y);
+            return s[Math.floor(s.length / 2)];
+        };
+
+        function hullArea(pts) {
+            pts.sort((a, b) => a[0] - b[0] || a[1] - b[1]);
+            const cr = (o, a, b) => (a[0] - o[0]) * (b[1] - o[1]) - (a[1] - o[1]) * (b[0] - o[0]);
+            const lo = [],
+                up = [];
+            for (const p of pts) {
+                while (lo.length > 1 && cr(lo[lo.length - 2], lo[lo.length - 1], p) <= 0) lo.pop();
+                lo.push(p);
+            }
+            for (let i = pts.length - 1; i >= 0; i--) {
+                const p = pts[i];
+                while (up.length > 1 && cr(up[up.length - 2], up[up.length - 1], p) <= 0) up.pop();
+                up.push(p);
+            }
+            const h = lo.slice(0, -1).concat(up.slice(0, -1));
+            let a = 0;
+            for (let i = 0; i < h.length; i++) {
+                const j = (i + 1) % h.length;
+                a += h[i][0] * h[j][1] - h[j][0] * h[i][1];
+            }
+            return Math.abs(a) / 2;
+        }
+
+        /* ---------- main scan ---------- */
+        function scan() {
+            if (!source) return fail('Start the camera or upload a photo first.');
+            const sw = source.videoWidth || source.naturalWidth,
+                sh = source.videoHeight || source.naturalHeight;
+            if (!sw) return false;
+            const s = 480 / Math.max(sw, sh),
+                W = Math.round(sw * s),
+                H = Math.round(sh * s);
+            const c = document.createElement('canvas');
+            c.width = W;
+            c.height = H;
+            const cx = c.getContext('2d', {
+                willReadFrequently: true
+            });
+            cx.drawImage(source, 0, 0, W, H);
+            const px = cx.getImageData(0, 0, W, H).data;
+            overlay.width = W;
+            overlay.height = H;
+
+            // 1. background colour = median of border pixels
+            const R = [],
+                G = [],
+                B = [];
+            for (let x = 0; x < W; x++)
+                for (const y of[0, 1, H - 2, H - 1]) {
+                    const i = (y * W + x) * 4;
+                    R.push(px[i]);
+                    G.push(px[i + 1]);
+                    B.push(px[i + 2]);
+                }
+            for (let y = 0; y < H; y++)
+                for (const x of[0, 1, W - 2, W - 1]) {
+                    const i = (y * W + x) * 4;
+                    R.push(px[i]);
+                    G.push(px[i + 1]);
+                    B.push(px[i + 2]);
+                }
+            const bg = [median(R), median(G), median(B)];
+            const whiteBg = Math.min(...bg) >= 220 && (Math.max(...bg) - Math.min(...bg)) <= 25;
+
+            // 2. foreground mask (colour distance + Otsu)
+            const dist = new Uint8Array(W * H),
+                hist = new Array(256).fill(0);
+            for (let p = 0; p < W * H; p++) {
+                const i = p * 4,
+                    d = Math.hypot(px[i] - bg[0], px[i + 1] - bg[1], px[i + 2] - bg[2]) / 1.732;
+                dist[p] = d;
+                hist[dist[p]]++;
+            }
+            const th = Math.max(otsu(hist, W * H), 26);
+            const mask = new Uint8Array(W * H);
+            for (let p = 0; p < W * H; p++) mask[p] = dist[p] > th ? 1 : 0;
+
+            // 3. connected components
+            const lab = new Int32Array(W * H),
+                blobs = [],
+                minA = W * H * 0.0006,
+                maxA = W * H * 0.25;
+            for (let p = 0; p < W * H; p++) {
+                if (!mask[p] || lab[p]) continue;
+                const id = blobs.length + 1,
+                    st = [p],
+                    pix = [];
+                lab[p] = id;
+                while (st.length) {
+                    const q = st.pop();
+                    pix.push(q);
+                    const x = q % W,
+                        y = (q / W) | 0;
+                    if (x > 0 && mask[q - 1] && !lab[q - 1]) {
+                        lab[q - 1] = id;
+                        st.push(q - 1);
+                    }
+                    if (x < W - 1 && mask[q + 1] && !lab[q + 1]) {
+                        lab[q + 1] = id;
+                        st.push(q + 1);
+                    }
+                    if (y > 0 && mask[q - W] && !lab[q - W]) {
+                        lab[q - W] = id;
+                        st.push(q - W);
+                    }
+                    if (y < H - 1 && mask[q + W] && !lab[q + W]) {
+                        lab[q + W] = id;
+                        st.push(q + W);
+                    }
+                }
+                blobs.push(pix);
+            }
+            const grains = blobs.filter(b => b.length >= minA);
+
+            // ----- ERROR 1: zero objects -----
+            if (grains.length === 0) {
+                if (!whiteBg) return fail('Please scan crops with a white background.');
+                return fail('Please scan 1–15 crops.');
+            }
+
+            // 4. features per grain
+            const items = grains.map(pix => {
+                let sx = 0,
+                    sy = 0,
+                    r = 0,
+                    g = 0,
+                    b = 0,
+                    dark = 0;
+                const edge = [];
+                for (const q of pix) {
+                    const x = q % W,
+                        y = (q / W) | 0;
+                    sx += x;
+                    sy += y;
+                    const i = q * 4;
+                    r += px[i];
+                    g += px[i + 1];
+                    b += px[i + 2];
+                    if (rgb2hsv(px[i], px[i + 1], px[i + 2])[2] < 0.30) dark++;
+                    if (!mask[q - 1] || !mask[q + 1] || !mask[q - W] || !mask[q + W])
+                        if ((x + y) % 2 === 0) edge.push([x, y]);
+                }
+                const n = pix.length,
+                    mx = sx / n,
+                    my = sy / n;
+                let a = 0,
+                    bb = 0,
+                    cc = 0;
+                for (const q of pix) {
+                    const dx = (q % W) - mx,
+                        dy = ((q / W) | 0) - my;
+                    a += dx * dx;
+                    bb += dx * dy;
+                    cc += dy * dy;
+                }
+                a /= n;
+                bb /= n;
+                cc /= n;
+                const t = (a + cc) / 2,
+                    d = Math.sqrt(((a - cc) / 2) ** 2 + bb * bb);
+                const aspect = Math.sqrt((t + d) / Math.max(t - d, 0.01));
+                const [h, sat, v] = rgb2hsv(r / n, g / n, b / n);
+                const solidity = n / Math.max(hullArea(edge) + edge.length * 0.5, n);
+                return {
+                    area: n,
+                    x: mx,
+                    y: my,
+                    aspect,
+                    h,
+                    s: sat,
+                    v,
+                    dark: dark / n,
+                    solidity: Math.min(solidity, 1)
+                };
+            });
+
+            // 5. identify crop
+            for (const it of items) {
+                const {
+                    aspect: a,
+                    h,
+                    s: sa,
+                    v,
+                    dark: d
+                } = it;
+                if (a >= 2.3 && sa < 0.42 && v > 0.5) it.type = 'Rice';
+                else if (a < 1.9 && h >= 35 && h <= 68 && sa > 0.42 && v > 0.55) it.type = 'Maize';
+                else if (a >= 1.1 && a < 2.2 && ((d > 0.02 && d < 0.3 && sa < 0.5 && v > 0.4) || (h >= 15 && h < 50 && sa > 0.15 && sa <= 0.42) || (h >= 10 && h < 35 && sa > 0.3 && v < 0.6 && v > 0.25))) it.type = 'Cowpea';
+                else it.type = null;
+            }
+
+            // ----- ERROR 2: wrong image -----
+            if (items.filter(i => i.type).length === 0)
+                return fail('Wrong image uploaded. Only maize, rice and cowpea can be scanned.');
+
+            // ----- ERROR 3: background not white -----
+            if (!whiteBg) return fail('Please scan crops with a white background.');
+
+            // ----- ERROR 4: more than 15 -----
+            if (grains.length > 15) return fail('Please scan 1–15 crops.');
+
+            // ----- ERROR 5: some objects unclear -----
+            if (items.some(i => !i.type)) return fail('Image is not clear. Please scan a clear image.');
+
+            // ----- ERROR 6: overlap -----
+            const med = {};
+            for (const t of['Maize', 'Rice', 'Cowpea']) {
+                const a = items.filter(i => i.type === t).map(i => i.area);
+                if (a.length >= 3) med[t] = median(a);
+            }
+            if (grains.some(b => b.length > maxA) || items.some(i => i.solidity < 0.80 || (med[i.type] && i.area > med[i.type] * 1.9)))
+                return fail('Image overlap detected. Separate the crops and scan again.');
+
+            // ----- ERROR 7: blurry image -----
+            let lapSum = 0,
+                lapSq = 0,
+                lapCount = 0;
+            const grayAt = i => 0.299 * px[i] + 0.587 * px[i + 1] + 0.114 * px[i + 2];
+            for (const grain of grains)
+                for (const q of grain) {
+                    const x = q % W,
+                        y = (q / W) | 0;
+                    if (x === 0 || y === 0 || x === W - 1 || y === H - 1) continue;
+                    const lap = 4 * grayAt(q * 4) - grayAt((q - 1) * 4) - grayAt((q + 1) * 4) - grayAt((q - W) * 4) - grayAt((q + W) * 4);
+                    lapSum += lap;
+                    lapSq += lap * lap;
+                    lapCount++;
+                }
+            const sharpness = lapCount ? lapSq / lapCount - (lapSum / lapCount) ** 2 : 0;
+            if (sharpness < 20) return fail('Image is not clear. Please scan a clear image.');
+
+            // 7. good / bad
+            items.forEach(it => {
+                const reasons = [];
+                const limit = it.type === 'Cowpea' ? 0.32 : 0.12;
+                if (it.dark > limit) reasons.push('dark / rotten spots');
+                if (it.h >= 70 && it.h <= 170 && it.s > 0.25) reasons.push('mould (green tint)');
+                if (med[it.type] && it.area < med[it.type] * 0.6) reasons.push('broken / shrivelled');
+                if (it.solidity < 0.88) reasons.push('irregular shape');
+                it.bad = reasons.length > 0;
+                it.reason = reasons.join(', ') || '—';
+            });
+
+            // 8. draw marks
+            const o = overlay.getContext('2d');
+            o.clearRect(0, 0, W, H);
+            const rad = Math.max(5, W * 0.012);
+            items.forEach((it, k) => {
+                o.beginPath();
+                o.arc(it.x, it.y, rad, 0, Math.PI * 2);
+                o.fillStyle = it.bad ? '#dc2626' : '#16a34a';
+                o.fill();
+                o.lineWidth = 2;
+                o.strokeStyle = '#fff';
+                o.stroke();
+                o.font = 'bold 11px sans-serif';
+                o.fillStyle = '#fff';
+                o.fillText(k + 1, it.x + rad + 2, it.y - rad);
+            });
+
+            // 9. results
+            const good = items.filter(i => !i.bad).length;
+            $('nGood').textContent = good;
+            $('nBad').textContent = items.length - good;
+            $('rows').innerHTML = items.map((it, k) =>
+                `<tr><td>${k+1}</td><td>${it.type}</td><td><span class="dot ${it.bad?'r':'g'}"></span>${it.bad?'Bad':'Good'}</td><td>${it.reason}</td></tr>`).join('');
+            $('results').style.display = 'block';
+            assistantLink.classList.add('has-results'); // result shown -> assistant button blinks
+            showMsg('okm', '✔ Scan complete: ' + items.length + ' grain(s) detected.');
+            return true;
+        }
+    </script>
+</body>
+
+</html>
