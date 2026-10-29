@@ -498,8 +498,8 @@
 
         getStartedBtn.addEventListener('click', () => {
             const lang = selectedLang || localStorage.getItem('preferredLang') || 'en';
-            // navigate to assistant and pass lang as query param
-            window.location.href = `assistant.html?lang=${encodeURIComponent(lang)}`;
+            // navigate to scanner page and pass lang as query param
+            window.location.href = `scanner.html?lang=${encodeURIComponent(lang)}`;
         });
 
         // initialize on load: use URL param > localStorage > show overlay
